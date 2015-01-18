@@ -61,13 +61,20 @@ namespace ImageFinderOrganizer
         }
 
         private void CopyFile(string srcFile, string targetFolder, int yearTaken)
-        {
+        {  
+
             string filename = System.IO.Path.GetFileNameWithoutExtension(srcFile) + ".jpg";
             string destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);
 
             if (!System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(destFile)))
             {
                 System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destFile));
+            }
+
+            if (destFile.Contains(targetFolder))
+            {
+                // ignore the target folder
+                return;
             }
 
             int count = 1;

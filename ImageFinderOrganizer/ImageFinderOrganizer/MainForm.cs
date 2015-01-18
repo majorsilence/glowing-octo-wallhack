@@ -16,12 +16,20 @@ namespace ImageFinderOrganizer
 
         private void ButtonChangeBaseSearch_Click(object sender, EventArgs e)
         {
-
+            var result = folderBrowserDialog1.ShowDialog();
+            if(result == System.Windows.Forms.DialogResult.OK)
+            {
+                TextBoxBaseSearch.Text = folderBrowserDialog1.SelectedPath;
+            }
         }
 
         private void ButtonChangeBaseOutput_Click(object sender, EventArgs e)
         {
-
+            var result = folderBrowserDialog1.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                TextBoxBaseOutput.Text = folderBrowserDialog1.SelectedPath;
+            }
         }
 
         private async void buttonStart_Click(object sender, EventArgs e)

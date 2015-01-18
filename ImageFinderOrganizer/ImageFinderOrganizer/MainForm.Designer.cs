@@ -47,6 +47,7 @@ namespace ImageFinderOrganizer
             this.ToolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.ToolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.buttonStart = new System.Windows.Forms.Button();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.StatusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -171,5 +172,6 @@ namespace ImageFinderOrganizer
 		}
 
         private Button buttonStart;
+        private FolderBrowserDialog folderBrowserDialog1;
 	}
 }
