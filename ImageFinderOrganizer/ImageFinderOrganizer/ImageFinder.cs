@@ -65,6 +65,11 @@ namespace ImageFinderOrganizer
             string filename = System.IO.Path.GetFileNameWithoutExtension(srcFile) + ".jpg";
             string destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);
 
+            if (!System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(destFile)))
+            {
+                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destFile));
+            }
+
             int count = 1;
             while (System.IO.File.Exists(destFile))
             {
