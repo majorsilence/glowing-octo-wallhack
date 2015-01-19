@@ -11,7 +11,6 @@ using System.Xml.Linq;
 using System.Threading.Tasks;
 namespace ImageFinderOrganizer
 {
-	[Microsoft.VisualBasic.CompilerServices.DesignerGenerated()]
 	partial class MainForm : System.Windows.Forms.Form
 	{
 

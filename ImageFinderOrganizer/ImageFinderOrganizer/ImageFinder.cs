@@ -13,6 +13,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
 using System.Text;
+using System.Windows.Media.Imaging;
 namespace ImageFinderOrganizer
 {
     public class ImageFinder
@@ -33,15 +34,22 @@ namespace ImageFinderOrganizer
         private static Regex r = new Regex(":");
 
         //retrieves the datetime WITHOUT loading the whole image
-        private static DateTime GetDateTakenFromImage(string path)
+        private DateTime GetDateTakenFromImage(string inFullPath)
         {
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            using (Image myImage = Image.FromStream(fs, false, false))
+            DateTime returnDateTime = DateTime.MinValue;
+            try
             {
-                PropertyItem propItem = myImage.GetPropertyItem(36867);
-                string dateTaken = r.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
-                return DateTime.Parse(dateTaken);
+                FileStream picStream = new FileStream(inFullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                BitmapSource bitSource = BitmapFrame.Create(picStream);
+                picStream.Close();
+                BitmapMetadata metaData = (BitmapMetadata)bitSource.Metadata;
+                returnDateTime = DateTime.Parse(metaData.DateTaken);
             }
+            catch
+            {
+                //do nothing  
+            }
+            return returnDateTime;
         }
 
         // *********************
@@ -49,19 +57,32 @@ namespace ImageFinderOrganizer
         private void FindAndCopyFiles(DirectoryInfo source, DirectoryInfo target)
         {
 
-            var files = Directory.EnumerateFiles(source.FullName, "*.*", SearchOption.AllDirectories)
+            var files = SafeWalk.EnumerateFiles(source.FullName, "*.*", SearchOption.AllDirectories)
             .Where(s => s.EndsWith(".JPG") || s.EndsWith(".jpg") || s.EndsWith(".JPEG") || s.EndsWith(".jpeg"));
 
             foreach (string file in files)
             {
-                DateTime takenDate = GetDateTakenFromImage(file);
-                CopyFile(file, target.FullName, takenDate.Year);
+                if (file.Contains(target.FullName))
+                {
+                    // ignore the target folder
+                    return;
+                }
+
+                try
+                {
+                    DateTime takenDate = GetDateTakenFromImage(file);
+                    CopyFile(file, target.FullName, takenDate.Year);
+                }
+                catch (System.ArgumentException ae)
+                {
+                    System.Console.WriteLine(ae.Message);
+                }
             }
 
         }
 
         private void CopyFile(string srcFile, string targetFolder, int yearTaken)
-        {  
+        {
 
             string filename = System.IO.Path.GetFileNameWithoutExtension(srcFile) + ".jpg";
             string destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);
@@ -71,17 +92,11 @@ namespace ImageFinderOrganizer
                 System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destFile));
             }
 
-            if (destFile.Contains(targetFolder))
-            {
-                // ignore the target folder
-                return;
-            }
-
             int count = 1;
             while (System.IO.File.Exists(destFile))
             {
-                filename = System.IO.Path.GetFileNameWithoutExtension(srcFile) 
-                    + string.Format("_{1}.jpg", count);
+                filename = System.IO.Path.GetFileNameWithoutExtension(srcFile)
+                    + string.Format("_{0}.jpg", count);
                 destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);
                 count++;
             }
