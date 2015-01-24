@@ -83,8 +83,8 @@ namespace ImageFinderOrganizer
 
         private void CopyFile(string srcFile, string targetFolder, int yearTaken)
         {
-
-            string filename = System.IO.Path.GetFileNameWithoutExtension(srcFile) + ".jpg";
+            string fileExtension = System.IO.Path.GetExtension(srcFile).ToLower();
+            string filename = System.IO.Path.GetFileNameWithoutExtension(srcFile) + fileExtension;
             string destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);
 
             if (!System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(destFile)))
@@ -96,7 +96,7 @@ namespace ImageFinderOrganizer
             while (System.IO.File.Exists(destFile))
             {
                 filename = System.IO.Path.GetFileNameWithoutExtension(srcFile)
-                    + string.Format("_{0}.jpg", count);
+                    + string.Format("_{0}{1}", count, fileExtension);
                 destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);
                 count++;
             }
