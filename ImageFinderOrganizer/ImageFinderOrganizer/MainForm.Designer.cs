@@ -47,6 +47,7 @@ namespace ImageFinderOrganizer
             this.ToolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.buttonStart = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.buttonCancel = new System.Windows.Forms.Button();
             this.StatusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -125,7 +126,7 @@ namespace ImageFinderOrganizer
             // 
             // buttonStart
             // 
-            this.buttonStart.Location = new System.Drawing.Point(18, 126);
+            this.buttonStart.Location = new System.Drawing.Point(99, 126);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(75, 23);
             this.buttonStart.TabIndex = 7;
@@ -133,11 +134,23 @@ namespace ImageFinderOrganizer
             this.buttonStart.UseVisualStyleBackColor = true;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
+            // buttonCancel
+            // 
+            this.buttonCancel.Enabled = false;
+            this.buttonCancel.Location = new System.Drawing.Point(18, 126);
+            this.buttonCancel.Name = "buttonCancel";
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancel.TabIndex = 8;
+            this.buttonCancel.Text = "Cancel";
+            this.buttonCancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(554, 192);
+            this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.StatusStrip1);
             this.Controls.Add(this.ButtonChangeBaseOutput);
@@ -172,5 +185,6 @@ namespace ImageFinderOrganizer
 
         private Button buttonStart;
         private FolderBrowserDialog folderBrowserDialog1;
+        private Button buttonCancel;
 	}
 }

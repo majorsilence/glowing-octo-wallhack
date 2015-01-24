@@ -3,12 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ImageFinderOrganizer
 {
     internal abstract class BaseFinder
     {
+        private CancellationToken cancellationToken;
+
+        private BaseFinder() { }
+
+        internal BaseFinder(CancellationToken cancellationToken) 
+        {
+            this.cancellationToken = cancellationToken;
+        }
 
         internal Task Execute(DirectoryInfo searchBase, DirectoryInfo destBase)
         {
@@ -19,6 +28,8 @@ namespace ImageFinderOrganizer
 
         protected void CopyFile(string srcFile, string targetFolder, int yearTaken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             string fileExtension = System.IO.Path.GetExtension(srcFile).ToLower();
             string filename = System.IO.Path.GetFileNameWithoutExtension(srcFile) + fileExtension;
             string destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);

@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ImageFinderOrganizer
 {
     internal class VideoFinder : BaseFinder
     {
+        internal VideoFinder(CancellationToken cancellationToken) 
+            : base(cancellationToken)
+        {
+        }
 
         private DateTime GetDateTakenFromVideo(string inFullPath)
         {

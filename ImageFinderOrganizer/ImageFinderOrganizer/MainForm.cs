@@ -9,13 +9,18 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Xml.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 namespace ImageFinderOrganizer
 {
 	public partial class MainForm
 	{
 
+        CancellationTokenSource videoSource;
+        CancellationTokenSource imageSource;
+
         private void ButtonChangeBaseSearch_Click(object sender, EventArgs e)
         {
+           
             var result = folderBrowserDialog1.ShowDialog();
             if(result == System.Windows.Forms.DialogResult.OK)
             {
@@ -34,22 +39,29 @@ namespace ImageFinderOrganizer
 
         private async void buttonStart_Click(object sender, EventArgs e)
         {
-            buttonStart.Enabled = true;
+            imageSource = new CancellationTokenSource();
+            videoSource = new CancellationTokenSource();
+
+            buttonCancel.Enabled = true;
+            buttonStart.Enabled = false;
             ToolStripProgressBar1.Style = ProgressBarStyle.Marquee;
             ToolStripStatusLabel1.Text = "Working ...";
             try
             {
-                var iFinder = new ImageFinder();
+                
+                var iFinder = new ImageFinder(imageSource.Token);
                 ToolStripStatusLabel1.Text = "Copying Images ...";
                 await iFinder.Execute(new System.IO.DirectoryInfo(TextBoxBaseSearch.Text),
                     new System.IO.DirectoryInfo(TextBoxBaseOutput.Text));
 
-                var vFinder = new VideoFinder();
+                if (!imageSource.IsCancellationRequested)
+                {
+                    var vFinder = new VideoFinder(videoSource.Token);
 
-                ToolStripStatusLabel1.Text = "Copying Videos ...";
-                await vFinder.Execute(new System.IO.DirectoryInfo(TextBoxBaseSearch.Text),
-                    new System.IO.DirectoryInfo(TextBoxBaseOutput.Text));
-
+                    ToolStripStatusLabel1.Text = "Copying Videos ...";
+                    await vFinder.Execute(new System.IO.DirectoryInfo(TextBoxBaseSearch.Text),
+                        new System.IO.DirectoryInfo(TextBoxBaseOutput.Text));
+                }
             }
             catch(Exception ex)
             {
@@ -60,7 +72,14 @@ namespace ImageFinderOrganizer
             ToolStripProgressBar1.Style = ProgressBarStyle.Blocks;
             ToolStripStatusLabel1.Text = "All Done";
             buttonStart.Enabled = true;
+            buttonCancel.Enabled = false;
 
+        }
+
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            imageSource.Cancel();
+            videoSource.Cancel();
         }
     }
 }

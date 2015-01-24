@@ -14,10 +14,16 @@ using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
 using System.Text;
 using System.Windows.Media.Imaging;
+using System.Threading;
 namespace ImageFinderOrganizer
 {
     internal class ImageFinder : BaseFinder
     {
+
+        internal ImageFinder(CancellationToken cancellationToken)
+            : base(cancellationToken)
+        {
+        }
 
         //retrieves the datetime WITHOUT loading the whole image
         private DateTime GetDateTakenFromImage(string inFullPath)
@@ -32,7 +38,7 @@ namespace ImageFinderOrganizer
 
                 FileInfo fileInfo = new FileInfo(inFullPath);
                 DateTime modifiedTime = fileInfo.LastWriteTime;
-                DateTime creationTime = DateTime.Parse(metaData.DateTaken);
+                DateTime creationTime =  (metaData.DateTaken != null) ? DateTime.Parse(metaData.DateTaken) : DateTime.Now;
 
                 returnDateTime = (creationTime < modifiedTime) ? creationTime : modifiedTime;
                                
