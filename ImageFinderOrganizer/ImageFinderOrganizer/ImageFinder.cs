@@ -16,22 +16,8 @@ using System.Text;
 using System.Windows.Media.Imaging;
 namespace ImageFinderOrganizer
 {
-    public class ImageFinder
+    internal class ImageFinder : BaseFinder
     {
-
-
-        internal Task Execute(DirectoryInfo searchBase, DirectoryInfo destBase)
-        {
-
-            return Task.Run(() => FindAndCopyFiles(searchBase, destBase));
-
-        }
-
-        // *********************
-        // See http://stackoverflow.com/questions/180030/how-can-i-find-out-when-a-picture-was-actually-taken-in-c-sharp-running-on-vista 
-        //we init this once so that if the function is repeatedly called
-        //it isn't stressing the garbage man
-        private static Regex r = new Regex(":");
 
         //retrieves the datetime WITHOUT loading the whole image
         private DateTime GetDateTakenFromImage(string inFullPath)
@@ -43,7 +29,13 @@ namespace ImageFinderOrganizer
                 BitmapSource bitSource = BitmapFrame.Create(picStream);
                 picStream.Close();
                 BitmapMetadata metaData = (BitmapMetadata)bitSource.Metadata;
-                returnDateTime = DateTime.Parse(metaData.DateTaken);
+
+                FileInfo fileInfo = new FileInfo(inFullPath);
+                DateTime modifiedTime = fileInfo.LastWriteTime;
+                DateTime creationTime = DateTime.Parse(metaData.DateTaken);
+
+                returnDateTime = (creationTime < modifiedTime) ? creationTime : modifiedTime;
+                               
             }
             catch
             {
@@ -54,24 +46,26 @@ namespace ImageFinderOrganizer
 
         // *********************
 
-        private void FindAndCopyFiles(DirectoryInfo source, DirectoryInfo target)
+        protected override void FindAndCopyFiles(DirectoryInfo source, DirectoryInfo target)
         {
 
             var files = SafeWalk.EnumerateFiles(source.FullName, "*.*", SearchOption.AllDirectories)
             .Where(s => s.EndsWith(".JPG") || s.EndsWith(".jpg") || s.EndsWith(".JPEG") || s.EndsWith(".jpeg"));
 
+            var imageTarget = System.IO.Path.Combine(target.FullName, "Photos");
+
             foreach (string file in files)
             {
                 if (file.Contains(target.FullName))
                 {
-                    // ignore the target folder
+                    // ignore the target folder with image portion
                     return;
                 }
 
                 try
                 {
                     DateTime takenDate = GetDateTakenFromImage(file);
-                    CopyFile(file, target.FullName, takenDate.Year);
+                    CopyFile(file, imageTarget, takenDate.Year);
                 }
                 catch (System.ArgumentException ae)
                 {
@@ -81,28 +75,7 @@ namespace ImageFinderOrganizer
 
         }
 
-        private void CopyFile(string srcFile, string targetFolder, int yearTaken)
-        {
-            string fileExtension = System.IO.Path.GetExtension(srcFile).ToLower();
-            string filename = System.IO.Path.GetFileNameWithoutExtension(srcFile) + fileExtension;
-            string destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);
-
-            if (!System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(destFile)))
-            {
-                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destFile));
-            }
-
-            int count = 1;
-            while (System.IO.File.Exists(destFile))
-            {
-                filename = System.IO.Path.GetFileNameWithoutExtension(srcFile)
-                    + string.Format("_{0}{1}", count, fileExtension);
-                destFile = System.IO.Path.Combine(targetFolder, yearTaken.ToString(), filename);
-                count++;
-            }
-            System.IO.File.Copy(srcFile, destFile, false);
-
-        }
+        
 
     }
 }

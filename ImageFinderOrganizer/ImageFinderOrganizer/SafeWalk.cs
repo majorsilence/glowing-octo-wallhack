@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ImageFinderOrganizer
 {
     // See http://stackoverflow.com/questions/5098011/directory-enumeratefiles-unauthorizedaccessexception
-    public static class SafeWalk
+    internal static class SafeWalk
     {
         public static IEnumerable<string> EnumerateFiles(string path, string searchPattern, SearchOption searchOpt)
         {

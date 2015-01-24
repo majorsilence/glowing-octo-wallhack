@@ -39,9 +39,17 @@ namespace ImageFinderOrganizer
             ToolStripStatusLabel1.Text = "Working ...";
             try
             {
-                var finder = new ImageFinder();
-                await finder.Execute(new System.IO.DirectoryInfo(TextBoxBaseSearch.Text),
+                var iFinder = new ImageFinder();
+                ToolStripStatusLabel1.Text = "Copying Images ...";
+                await iFinder.Execute(new System.IO.DirectoryInfo(TextBoxBaseSearch.Text),
                     new System.IO.DirectoryInfo(TextBoxBaseOutput.Text));
+
+                var vFinder = new VideoFinder();
+
+                ToolStripStatusLabel1.Text = "Copying Videos ...";
+                await vFinder.Execute(new System.IO.DirectoryInfo(TextBoxBaseSearch.Text),
+                    new System.IO.DirectoryInfo(TextBoxBaseOutput.Text));
+
             }
             catch(Exception ex)
             {
