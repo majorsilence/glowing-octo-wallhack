@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 namespace ImageFinderOrganizer
 {
-    internal abstract class BaseFinder
+    internal abstract class BaseFinder 
     {
         private CancellationToken cancellationToken;
+
+        public abstract event FileOrangizerEventHandler CurrentItem;
+        public abstract event FileOrangizerEventHandler FileCount;
 
         private BaseFinder() { }
 

@@ -20,6 +20,9 @@ namespace ImageFinderOrganizer
     internal class ImageFinder : BaseFinder
     {
 
+        public override event FileOrangizerEventHandler CurrentItem;
+        public override event FileOrangizerEventHandler FileCount;
+
         internal ImageFinder(CancellationToken cancellationToken)
             : base(cancellationToken)
         {
@@ -38,10 +41,10 @@ namespace ImageFinderOrganizer
 
                 FileInfo fileInfo = new FileInfo(inFullPath);
                 DateTime modifiedTime = fileInfo.LastWriteTime;
-                DateTime creationTime =  (metaData.DateTaken != null) ? DateTime.Parse(metaData.DateTaken) : DateTime.Now;
+                DateTime creationTime = (metaData.DateTaken != null) ? DateTime.Parse(metaData.DateTaken) : DateTime.Now;
 
                 returnDateTime = (creationTime < modifiedTime) ? creationTime : modifiedTime;
-                               
+
             }
             catch
             {
@@ -60,8 +63,25 @@ namespace ImageFinderOrganizer
 
             var imageTarget = System.IO.Path.Combine(target.FullName, "Photos");
 
+            int count = files.Count();
+
+            if (FileCount != null)
+            {
+                this.FileCount(this, new FileOrangizerArgs(count));
+            }
+
+          
+
+            int currentItem = 0;
             foreach (string file in files)
             {
+                currentItem++;
+
+                if (CurrentItem != null)
+                {
+                    this.CurrentItem(this, new FileOrangizerArgs(currentItem));
+                }
+
                 if (file.Contains(target.FullName))
                 {
                     // ignore the target folder with image portion
@@ -81,7 +101,7 @@ namespace ImageFinderOrganizer
 
         }
 
-        
+
 
     }
 }

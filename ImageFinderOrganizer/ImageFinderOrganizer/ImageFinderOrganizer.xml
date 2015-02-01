@@ -4,5 +4,10 @@
         <name>ImageFinderOrganizer</name>
     </assembly>
     <members>
+        <member name="P:ImageFinderOrganizer.FileOrangizerArgs.Message">
+            <summary>
+            Event Message.
+            </summary>
+        </member>
     </members>
 </doc>

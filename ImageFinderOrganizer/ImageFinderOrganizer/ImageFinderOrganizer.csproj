@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseFinder.cs" />
+    <Compile Include="FileOrangizerArgs.cs" />
     <Compile Include="ImageFinder.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

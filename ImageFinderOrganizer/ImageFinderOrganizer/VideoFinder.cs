@@ -10,6 +10,10 @@ namespace ImageFinderOrganizer
 {
     internal class VideoFinder : BaseFinder
     {
+
+        public override event FileOrangizerEventHandler CurrentItem;
+        public override event FileOrangizerEventHandler FileCount;
+
         internal VideoFinder(CancellationToken cancellationToken) 
             : base(cancellationToken)
         {
@@ -73,8 +77,24 @@ namespace ImageFinderOrganizer
 
             var videoTarget = System.IO.Path.Combine(target.FullName, "Videos");
 
+
+            int count = files.Count();
+
+            if (FileCount != null)
+            {
+                this.FileCount(this, new FileOrangizerArgs(count));
+            }
+
+            int currentItem = 0;
             foreach (string file in files)
             {
+                currentItem++;
+
+                if (CurrentItem != null)
+                {
+                    this.CurrentItem(this, new FileOrangizerArgs(currentItem));
+                }
+
                 if (file.Contains(target.FullName))
                 {
                     // ignore the target folder without the video portion
