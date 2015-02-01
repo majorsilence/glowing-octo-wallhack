@@ -83,7 +83,7 @@ namespace ImageFinderOrganizer
                 });
 
 
-                int percent = (processingCount / e1.Value) * 100;
+                int percent = (int)(((decimal)e1.Value / (decimal)processingCount) * 100m);
                 if (percent > 100)
                 {
                     percent = 100;
@@ -120,7 +120,7 @@ namespace ImageFinderOrganizer
                     {
                         ToolStripStatusLabel1.Text = string.Format("Video {0} of {1}", e1.Value, processingCount);
                     });
-                    int percent = (processingCount / e1.Value) * 100;
+                    int percent = (int)(((decimal)e1.Value / (decimal)processingCount) * 100m);
                     if (percent > 100)
                     {
                         percent = 100;
